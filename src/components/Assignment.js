@@ -62,7 +62,7 @@ class Assignment extends React.Component {
     console.log("Adding assignment... name:" + assignment["name"] );
     
     const token = Cookies.get('XSRF-TOKEN');
-    fetch(`${SERVER_URL}gradebook`,
+    fetch(`${SERVER_URL}/gradebook`,
         {
             method: 'POST',
             headers: { 'Content-Type': 'application/json',

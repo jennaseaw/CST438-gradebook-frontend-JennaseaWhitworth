@@ -18,6 +18,38 @@ class AddAssignment extends React.Component {
       this.state = {open:false ,assignment: []};
     };
  
+ componentDidMount() {
+    this.fetchAssignments();
+  }
+ 
+ 
+  fetchAssignments = () => {
+    console.log("Assignment.fetchAssignments");
+    const token = Cookies.get('XSRF-TOKEN');
+    fetch(`${SERVER_URL}/gradebook`, 
+      {  
+        method: 'GET', 
+        headers: { 'X-XSRF-TOKEN': token }
+      } )
+    .then((response) => response.json()) 
+    .then((responseData) => { 
+      if (Array.isArray(responseData.assignments)) {
+        //  add to each assignment an "id"  This is required by DataGrid  "id" is the row index in the data grid table 
+        this.setState({ assignments: responseData.assignments.map((assignment, index) => ( { id: index, ...assignment } )) });
+      } else {
+        toast.error("Fetch failed.", {
+          position: toast.POSITION.BOTTOM_LEFT
+        });
+      }        
+    })
+    .catch(err => console.error(err)); 
+  }
+  
+   onRadioClick = (event) => {
+    console.log("Assignment.onRadioClick " + event.target.value);
+    this.setState({selected: event.target.value});
+  }
+  
    
  
    
@@ -87,9 +119,9 @@ class AddAssignment extends React.Component {
             <Dialog open={this.state.open} onClose={this.handleClose}>
                 <DialogTitle>Add Assignment</DialogTitle>
                 <DialogContent  style={{paddingTop: 20}} >
-                  <TextField autoFocus fullWidth label="Assignment Name" name="name" onChange={this.handleChange}  /> 
+                  <TextField autoFocus fullWidth label="Assignment Name" name="assignmentName" onChange={this.handleChange}  /> 
                   <TextField autoFocus fullWidth label="Course Title" name="courseTitle" onChange={this.handleChange}  /> 
-                  <TextField autoFocus fullWidth label="Due Date" name="dueDate" onChange={this.handleChange}  /> 
+                  <TextField autoFocus fullWidth label="Due Date" name="date" onChange={this.handleChange}  /> 
                 </DialogContent>
                 <DialogActions>
                   <Button color="secondary" onClick={this.handleClose}>Cancel</Button>
